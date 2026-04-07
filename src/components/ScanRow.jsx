@@ -32,8 +32,14 @@ export default function ScanRow({ row, delRow, toast, setScan }) {
   const sisa = row.qty_terima - (editing ? Number(editVal) || 0 : row.qty_rak)
 
   return (
-    <tr>
+    <tr style={ row.input_tgl && row.input_tgl !== row.tgl ? { background: 'rgba(245,158,11,.05)' } : {} }>
       <td className="mono-cell" style={{ fontSize: 10, color: 'var(--t3)' }}>{row.wkt}</td>
+      <td className="mono-cell" style={{ fontSize: 10 }}>
+        {row.input_tgl && row.input_tgl !== row.tgl
+          ? <span style={{ color: 'var(--amber)', fontWeight: 700 }} title={`Tanggal barang: ${row.tgl}`}>⏪ {row.input_tgl}</span>
+          : <span style={{ color: 'var(--t3)' }}>{row.input_tgl || row.tgl}</span>
+        }
+      </td>
       <td><span className={`badge b-sup b-${SUP_CLS[row.supplier]}`}>{row.supplier}</span></td>
       <td className="mono-cell amber">{row.sku}</td>
       <td style={{ maxWidth: 140, fontSize: 11 }}>{row.nama || '-'}</td>
