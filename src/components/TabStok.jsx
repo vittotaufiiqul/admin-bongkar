@@ -1,23 +1,29 @@
 import { useState, useMemo } from 'react'
 import { SUPPLIERS, SUP_CLS } from '../lib/constants'
 import { inRange, tglComp } from '../lib/utils'
-import DateRangeBar from './DateRangeBar'
+import DateToggleBar from './DateToggleBar'
 
 export default function TabStok({ scan, perm }) {
   const [search, setSearch]   = useState('')
   const [supFil, setSupFil]   = useState('Semua')
+  const [mode, setMode]       = useState('single')
   const [fromTgl, setFromTgl] = useState('')
   const [toTgl, setToTgl]     = useState('')
 
-  const filteredScan = useMemo(
-    () => scan.filter(s => inRange(s.tgl, fromTgl, toTgl)),
-    [scan, fromTgl, toTgl]
+  const allDates = useMemo(() =>
+    [...new Set(scan.map(s => s.tgl))].sort((a, b) => tglComp(b) > tglComp(a) ? 1 : -1),
+    [scan]
   )
 
-  const filteredPerm = useMemo(
-    () => perm.filter(p => inRange(p.tgl, fromTgl, toTgl)),
-    [perm, fromTgl, toTgl]
-  )
+  const filteredScan = useMemo(() => {
+    if (mode === 'single' && fromTgl) return scan.filter(s => s.tgl === fromTgl)
+    return scan.filter(s => inRange(s.tgl, fromTgl, toTgl))
+  }, [scan, mode, fromTgl, toTgl])
+
+  const filteredPerm = useMemo(() => {
+    if (mode === 'single' && fromTgl) return perm.filter(p => p.tgl === fromTgl)
+    return perm.filter(p => inRange(p.tgl, fromTgl, toTgl))
+  }, [perm, mode, fromTgl, toTgl])
 
   const agg = useMemo(() => {
     const map = {}
@@ -78,8 +84,11 @@ export default function TabStok({ scan, perm }) {
         ))}
       </div>
 
-      <DateRangeBar
-        from={fromTgl} setFrom={setFromTgl} to={toTgl} setTo={setToTgl}
+      <DateToggleBar
+        mode={mode} setMode={setMode}
+        from={fromTgl} setFrom={setFromTgl}
+        to={toTgl} setTo={setToTgl}
+        allDates={allDates}
         onClear={() => { setFromTgl(''); setToTgl('') }}
         extraRight={
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
