@@ -1,15 +1,16 @@
 import { useState, useRef, useMemo } from 'react'
 import { useSKUForm } from '../hooks/useSKUForm'
 import { KATLIST, SUP_CLS } from '../lib/constants'
-import { nowTs, dlCSV, inRange, groupByTgl } from '../lib/utils'
+import { nowTs, dlCSV, inRange, groupByTgl, tglComp } from '../lib/utils'
 import SkuFormUI from './SkuFormUI'
-import DateRangeBar from './DateRangeBar'
+import DateToggleBar from './DateToggleBar'
 
 export default function TabPerm({ data, addRow, delRow, master, toast }) {
   const [qty, setQty]       = useState('')
   const [kategori, setKat]  = useState('Mukena')
   const [tgl, setTgl]       = useState(nowTs().tgl)
   const [saving, setSaving] = useState(false)
+  const [mode, setMode]     = useState('single')
   const [fromTgl, setFromTgl] = useState(() => nowTs().tgl)
   const [toTgl, setToTgl]     = useState(() => nowTs().tgl)
   const [collapsed, setCollapsed] = useState({})
@@ -17,6 +18,11 @@ export default function TabPerm({ data, addRow, delRow, master, toast }) {
   const qtyRef = useRef()
   const f = useSKUForm(master, qtyRef)
   const onSuffixKey = e => { if (e.key === 'Enter' && f.suffix.length === 4) qtyRef.current?.focus() }
+
+  const allDates = useMemo(() =>
+    [...new Set(data.map(d => d.tgl))].sort((a, b) => tglComp(b) > tglComp(a) ? 1 : -1),
+    [data]
+  )
 
   async function add() {
     if (f.suffix.length !== 4 || !qty || !tgl) { toast('Tanggal, SKU & QTY wajib!', false); return }
@@ -30,9 +36,13 @@ export default function TabPerm({ data, addRow, delRow, master, toast }) {
     setSaving(false)
   }
 
-  const filtered = useMemo(() => data.filter(r => inRange(r.tgl, fromTgl, toTgl)), [data, fromTgl, toTgl])
-  const groups   = useMemo(() => groupByTgl(filtered), [filtered])
-  const toggle   = t => setCollapsed(p => ({ ...p, [t]: !p[t] }))
+  const filtered = useMemo(() => {
+    if (mode === 'single') return data.filter(r => r.tgl === fromTgl)
+    return data.filter(r => inRange(r.tgl, fromTgl, toTgl))
+  }, [data, mode, fromTgl, toTgl])
+
+  const groups = useMemo(() => groupByTgl(filtered), [filtered])
+  const toggle = t => setCollapsed(p => ({ ...p, [t]: !p[t] }))
 
   return (
     <div>
@@ -71,8 +81,11 @@ export default function TabPerm({ data, addRow, delRow, master, toast }) {
         </div>
 
         <div>
-          <DateRangeBar
-            from={fromTgl} setFrom={setFromTgl} to={toTgl} setTo={setToTgl}
+          <DateToggleBar
+            mode={mode} setMode={setMode}
+            from={fromTgl} setFrom={setFromTgl}
+            to={toTgl} setTo={setToTgl}
+            allDates={allDates}
             onClear={() => { setFromTgl(nowTs().tgl); setToTgl(nowTs().tgl) }}
             extraRight={filtered.length > 0 && (
               <button className="btn btn-success" style={{ padding: '4px 10px', fontSize: 10 }}
