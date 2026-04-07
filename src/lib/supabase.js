@@ -4,9 +4,14 @@ let _client = null
 
 export function getSupabase() {
   if (!_client) {
-    const url = localStorage.getItem('https://pukewhsdybkmekkfoxkb.supabase.co')
-    const key = localStorage.getItem('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1a2V3aHNkeWJrbWVra2ZveGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MTY5NzUsImV4cCI6MjA5MDM5Mjk3NX0.RuwLqQCSY-4ldFy6OoBcKpsv_sm2hLI-Cl6jZiLOV6Q')
-    if (url && key) _client = createClient(url, key)
+    const url = import.meta.env.VITE_SUPABASE_URL
+    const key = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+    if (!url || !key) {
+      throw new Error("Supabase ENV belum diset!")
+    }
+
+    _client = createClient(url, key)
   }
   return _client
 }
