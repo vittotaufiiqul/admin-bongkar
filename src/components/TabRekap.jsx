@@ -134,7 +134,7 @@ export default function TabRekap({ perm, scan, toast }) {
           { l: '🟡 Kurang',   v: stats.kurang, c: 'var(--amber)'  },
           { l: '🔴 Loss Scan',v: stats.loss,   c: 'var(--purple)' },
           { l: '🟠 Lebih',    v: stats.lebih,  c: 'var(--blue)'   },
-          { l: '⚠ Tdk di Perm.', v: stats.orphan, c: 'var(--orange)' },
+          { l: '⚠ Tdk ada di permintaan.', v: stats.orphan, c: 'var(--orange)' },
         ].map(s => (
           <div key={s.l} className="stat">
             <div className="stat-lbl">{s.l}</div>
