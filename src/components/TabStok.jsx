@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { SUPPLIERS, SUP_CLS } from '../lib/constants'
-import { inRange } from '../lib/utils'
+import { inRange, tglComp } from '../lib/utils'
 import DatePicker from './DatePicker'
 
 export default function TabStok({ scan, perm }) {
@@ -30,6 +30,7 @@ export default function TabStok({ scan, perm }) {
         tt: 0, tr: 0,
         rak: s.rak || '',
         tglScanList: [],
+        tglPermList: [],
       }
       map[k].tt += Number(s.qty_terima)
       map[k].tr += Number(s.qty_rak)
@@ -42,7 +43,7 @@ export default function TabStok({ scan, perm }) {
       const k = `${p.supplier}__${p.sku}`
       if (!map[k]) map[k] = {
         supplier: p.supplier, sku: p.sku, nama: p.nama || '',
-        tt: 0, tr: 0, rak: '', tglScanList: [],
+        tt: 0, tr: 0, rak: '', tglScanList: [], tglPermList: [],
       }
       if (!map[k].tglPermList) map[k].tglPermList = []
       if (p.tgl && !map[k].tglPermList.includes(p.tgl)) map[k].tglPermList.push(p.tgl)
