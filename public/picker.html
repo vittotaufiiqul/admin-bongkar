@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0a0d12"/>
+<title>Picker — Admin Bongkar</title>
+<link rel="stylesheet" href="picker.css"/>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN: LOGIN (admin & picker)
+══════════════════════════════════════════════════════ -->
+<div id="screen-login" class="screen">
+  <div class="login-box">
+
+    <div class="login-logo">📦</div>
+    <div class="login-title">Admin Bongkar</div>
+    <div class="login-sub">Pilih role kamu untuk masuk ke sistem</div>
+
+    <!-- Role selector -->
+    <div class="role-selector">
+      <div class="role-card admin" id="role-admin" onclick="selectRole('admin')">
+        <span class="role-icon">🔐</span>
+        <div class="role-label">Admin</div>
+        <div class="role-desc">Kelola sistem</div>
+      </div>
+      <div class="role-card picker" id="role-picker" onclick="selectRole('picker')">
+        <span class="role-icon">📦</span>
+        <div class="role-label">Picker</div>
+        <div class="role-desc">Ambil & lapor rak</div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div id="login-err" class="login-err"></div>
+
+    <div class="f-group">
+      <label class="f-label" id="nama-label">Nama Kamu</label>
+      <input id="inp-nama" class="f-input" type="text"
+        placeholder="Masukkan nama kamu"
+        autocomplete="name"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+
+    <div class="f-group" id="kode-group" style="display:none">
+      <label class="f-label">Kode Akses</label>
+      <input id="inp-kode" class="f-input" type="text"
+        placeholder="Dari admin"
+        autocomplete="off"
+        style="font-family:var(--mono);letter-spacing:2px"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+
+    <button class="btn-login" id="btn-login" onclick="doLogin()">
+      Pilih role dulu ↑
+    </button>
+
+    <div style="margin-top:16px;font-size:11px;color:var(--t3);text-align:center;line-height:1.7">
+      Admin: langsung ke sistem utama<br/>
+      Picker: butuh kode akses dari admin
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN: PICKER
+══════════════════════════════════════════════════════ -->
+<div id="screen-picker" class="screen">
+
+  <!-- Header -->
+  <div class="picker-hdr">
+    <div class="picker-hdr-logo">📦</div>
+    <div>
+      <div class="picker-hdr-title">Stok Lebihan</div>
+      <div class="picker-hdr-name" id="picker-nama-display">-</div>
+    </div>
+    <div class="picker-hdr-right">
+      <div id="realtime-dot" class="realtime-dot off"></div>
+      <button class="btn-keluar" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="picker-content">
+    <div class="sec-label">
+      📦 Barang di Area Lebihan
+      <span style="font-size:10px;color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">
+        — tap untuk pilih yang raknya kosong
+      </span>
+    </div>
+    <div id="stok-list" class="stok-list">
+      <div class="empty-state">
+        <span class="empty-icon">⏳</span>
+        <div class="empty-title">Memuat data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tombol lapor (sticky bottom) -->
+  <div class="lapor-bar">
+    <div class="lapor-hint" id="lapor-hint">
+      Pilih barang yang raknya kosong, lalu lapor ke admin
+    </div>
+    <button class="btn-lapor" id="btn-lapor" onclick="openModal()" disabled>
+      🔔 Lapor Rak Kosong
+      <span class="lapor-badge" id="lapor-badge" style="display:none">0</span>
+    </button>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL: LAPOR RAK KOSONG
+══════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeIfOutside(event)">
+  <div class="modal-sheet">
+    <span class="modal-handle"></span>
+
+    <div class="modal-title">🔔 Lapor Rak Kosong</div>
+    <div class="modal-sub">
+      Admin akan langsung dapat notifikasi dan bisa mengisi rak dari area lebihan.
+    </div>
+
+    <!-- Rak input -->
+    <div class="m-group">
+      <label class="m-label">Nomor Rak yang Kosong</label>
+      <input id="m-rak" class="m-input" type="text"
+        placeholder="Contoh: A-01"
+        style="font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:2px"/>
+    </div>
+
+    <!-- Rak suggestions dari item terpilih -->
+    <div id="rak-chips" class="rak-chips" style="margin-top:-8px"></div>
+
+    <!-- Barang terpilih -->
+    <div class="m-group">
+      <label class="m-label">Barang yang Diambil dari Rak</label>
+      <div id="selected-info" class="selected-items-box">
+        Tidak ada barang dipilih
+      </div>
+    </div>
+
+    <!-- Pesan -->
+    <div class="m-group">
+      <label class="m-label">Pesan Tambahan (opsional)</label>
+      <textarea id="m-pesan" class="m-textarea"
+        placeholder="Contoh: Rak sudah kosong sejak tadi, barang habis diambil semua..."></textarea>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Batal</button>
+      <button class="btn-send" id="btn-send" onclick="kirimLaporan()">
+        📨 Kirim Laporan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="toast"></div>
+
+<!-- Dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="picker.js"></script>
+
+</body>
+</html>
