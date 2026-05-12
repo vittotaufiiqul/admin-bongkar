@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE FIX — tambahkan @import ini di main.jsx atau index.css
+   ATAU paste isi file ini ke bagian bawah global.css yang ada
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Pastikan mobile tabs selalu tampil di layar kecil ── */
+@media (max-width: 768px) {
+
+  /* Sembunyikan tab bar desktop di dalam header */
+  .hdr-tabs,
+  .desktop-tabs {
+    display: none !important;
+  }
+
+  /* Tampilkan mobile bottom tabs */
+  .mobile-tabs {
+    display: block !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 999 !important;
+    height: var(--mtab-h, 58px) !important;
+    background: rgba(13, 15, 20, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-top: 1px solid var(--b1) !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+
+  .mobile-tabs::-webkit-scrollbar { display: none !important; }
+
+  .mobile-tabs-inner {
+    display: flex !important;
+    min-width: max-content !important;
+    height: 100% !important;
+    align-items: center !important;
+    padding: 0 4px !important;
+  }
+
+  .mobile-tab {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    cursor: pointer !important;
+    color: var(--t3) !important;
+    font-size: 9px !important;
+    font-weight: 600 !important;
+    letter-spacing: .2px !important;
+    text-transform: uppercase !important;
+    padding: 6px 16px !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+    min-width: 60px !important;
+    border-radius: 8px !important;
+    transition: color .15s !important;
+    font-family: var(--font) !important;
+  }
+
+  .mobile-tab svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .mobile-tab.active {
+    color: var(--brand-lt) !important;
+  }
+
+  .mobile-tab .m-badge {
+    position: absolute !important;
+    top: 4px !important;
+    right: 8px !important;
+    font-size: 8px !important;
+    font-weight: 800 !important;
+    padding: 1px 4px !important;
+    border-radius: 8px !important;
+    line-height: 1.4 !important;
+    font-family: var(--mono) !important;
+    color: #fff !important;
+  }
+
+  /* Beri ruang bawah untuk konten agar tidak tertutup tab bar */
+  .main {
+    padding-bottom: calc(var(--mtab-h, 58px) + 16px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* User info di header — ringkas di mobile */
+  .hdr-user-name,
+  .hdr-user-role {
+    display: none !important;
+  }
+
+  .hdr-brand-ver { display: none !important; }
+
+  /* Status pill — hanya dot di mobile */
+  .status-pill span:not(.status-dot),
+  .db-pill span:not(.db-dot) {
+    display: none !important;
+  }
+
+  /* Toast di atas tab bar */
+  .toast-wrap {
+    top: auto !important;
+    bottom: calc(var(--mtab-h, 58px) + 10px + env(safe-area-inset-bottom)) !important;
+    left: 10px !important;
+    right: 10px !important;
+  }
+  .toast { max-width: 100% !important; }
+}
+
+/* ── Desktop: sembunyikan mobile tabs ── */
+@media (min-width: 769px) {
+  .mobile-tabs {
+    display: none !important;
+  }
+}
